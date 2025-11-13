@@ -1,0 +1,101 @@
+# Planejador de Equilíbrio Vida-Profissional
+
+Sistema em Python que organiza um dia de trabalho/vida pessoal usando Programação Dinâmica. O script cria um conjunto de tarefas (20+) com duração, prioridade, tipo e impacto no bem-estar. Em seguida, ordena os dados com Merge Sort recursivo (com memoização) e aplica Mochila 0/1 também recursiva para escolher automaticamente a combinação de tarefas que maximiza o impacto sem ultrapassar o limite diário.
+
+## Requisitos
+
+- Python 3.12+
+- Pandas
+- Rich
+
+No Ubuntu/WSL:
+
+```bash
+sudo apt-get install -y python3-pandas python3-rich
+```
+
+No Windows:
+
+```powershell
+py -m pip install pandas rich
+```
+
+## Como rodar
+
+```bash
+python3 planner.py \
+  [--limit MINUTOS] \
+  [--sort hibrido|impacto|prioridade] \
+  [--html-report caminho.html]
+```
+
+Exemplos:
+
+- `python3 planner.py` → usa limite padrão de 480 min e ordenação híbrida (prioridade > impacto > duração).
+- `python3 planner.py --limit 420 --sort impacto` → reorganiza os dados priorizando impacto e aplica o novo limite antes da mochila.
+- `python3 planner.py --html-report relatorio.html` → exporta um arquivo HTML estilizado além do relatório no terminal.
+
+O script imprime um painel formatado (via Rich) com as tarefas escolhidas, tempo total utilizado, impacto alcançado, equilíbrio pessoal/profissional, cronograma sequencial e o DataFrame ordenado. Opcionalmente, tudo é espelhado em HTML.
+
+## Como a solução funciona
+
+1. **DataFrame base** – As tarefas são definidas em `gerar_tarefas_base()` e convertidas para um `DataFrame` do pandas.
+2. **Ordenação com Merge Sort** – A função `merge_sort_dataframe` divide recursivamente o DataFrame em metades, ordena cada metade (memoizando subproblemas iguais) e mescla seguindo o plano (prioridade e impacto decrescente, duração crescente).
+3. **Mochila 0/1 recursiva** – `knapsack_recursive` utiliza programação dinâmica top-down (memoização). O “peso” é a duração, o “valor” é o impacto. Cada decisão considera incluir ou excluir a tarefa atual.
+4. **Processamento adicional recursivo** – Funções `recursao_estatisticas`, `calcular_balanco` e `montar_cronograma_recursivo` percorrem recursivamente a lista de tarefas escolhidas para calcular somatórios, equilíbrio e montar um cronograma HH:MM.
+5. **Relatório** – `produzir_relatorio` usa Rich para montar um painel com indicadores, tabelas legíveis e cronograma; também exporta HTML quando `--html-report` é informado.
+
+### Conceitos de Programação Dinâmica usados
+
+- **Subestruturas ótimas**: tanto na ordenação quanto na mochila, o resultado global depende da combinação ótima de subproblemas.
+- **Sobreposição de subproblemas**: chamadas com os mesmos parâmetros são armazenadas em dicionários de memoização para evitar recomputações.
+- **Recursão + memoização (top-down)**: todas as funções principais trabalham dessa forma, atendendo ao requisito da disciplina.
+
+## Exemplo de saída
+
+```text
+──────────────────────── Relatório de Equilíbrio Diário ────────────────────────
+╭───────── Resumo Diário ──────────╮
+│ Limite diário            480 min │
+│ Tempo utilizado          465 min │
+│ Impacto total                 31 │
+│ Distribuição pessoal       59.1% │
+│ Distribuição profissional  40.9% │
+╰──────────────────────────────────╯
+
+Tarefas escolhidas (ordenadas por prioridade e impacto)
+                                 Seleção ótima                                  
+     ╷                   ╷               ╷            ╷              ╷          
+  ID │ Tarefa            │ Duração (min) │ Prioridade │     Tipo     │ Impacto  
+ ════╪═══════════════════╪═══════════════╪════════════╪══════════════╪═════════ 
+  1  │ Meditação guiada  │            20 │     5      │   pessoal    │    3     
+  3  │ Revisão de metas  │            30 │     5      │ profissional │    3     
+     │ semanais          │               │            │              │          
+ 16  │ Planejamento      │            35 │     4      │   pessoal    │    3     
+    ...
+
+Cronograma sugerido (início/fim em HH:MM)
+                              Execução sequencial                               
+     ╷                         ╷        ╷       ╷               ╷               
+  ID │ Tarefa                  │ Início │  Fim  │ Duração (min) │     Tipo      
+ ════╪═════════════════════════╪════════╪═══════╪═══════════════╪══════════════ 
+  1  │ Meditação guiada        │ 00:00  │ 00:20 │            20 │   pessoal     
+  3  │ Revisão de metas        │ 00:20  │ 00:50 │            30 │ profissional  
+    ...
+
+DataFrame completo ordenado pelo Merge Sort
+                              Tarefas (Merge Sort)                              
+     ╷                   ╷               ╷            ╷              ╷          
+  ID │ Tarefa            │ Duração (min) │ Prioridade │     Tipo     │ Impacto  
+ ════╪═══════════════════╪═══════════════╪════════════╪══════════════╪═════════ 
+  1  │ Meditação guiada  │            20 │     5      │   pessoal    │    3     
+  3  │ Revisão de metas  │            30 │     5      │ profissional │    3     
+    ...
+```
+
+## Estrutura do repositório
+
+- `planner.py` – Implementação completa com tarefas, ordenação recursiva, mochila DP e relatório.
+- `README.md` – Este arquivo com documentação acadêmica/pedagógica.
+
+Sinta-se à vontade para ajustar as tarefas ou o limite diário para realizar novos experimentos.

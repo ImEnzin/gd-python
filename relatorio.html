@@ -1,0 +1,459 @@
+
+    <html>
+        <head>
+            <meta charset="utf-8" />
+            <title>Relatório de Equilíbrio Diário</title>
+            
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f6f8fb; color: #0f172a; }
+        h1 { color: #2563eb; }
+        .card { background: white; padding: 16px 24px; border-radius: 12px; margin-bottom: 24px; box-shadow: 0 10px 20px rgba(15,23,42,0.08); }
+        table { border-collapse: collapse; width: 100%; margin-top: 12px; }
+        th, td { border: 1px solid #e2e8f0; padding: 8px 12px; text-align: left; }
+        th { background: #eff6ff; color: #1d4ed8; }
+    </style>
+    
+        </head>
+        <body>
+            <h1>Relatório de Equilíbrio Diário</h1>
+            <div class="card" style="display:flex; gap:16px; flex-wrap:wrap;">
+                <div><strong>Limite diário</strong><br><span>480 min</span></div><div><strong>Tempo utilizado</strong><br><span>465 min</span></div><div><strong>Impacto total</strong><br><span>31</span></div><div><strong>Pessoal</strong><br><span>59.1%</span></div><div><strong>Profissional</strong><br><span>40.9%</span></div>
+            </div>
+            <div class="card">
+                <h2>Tarefas escolhidas</h2>
+                <table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>task_id</th>
+      <th>name</th>
+      <th>duration</th>
+      <th>priority</th>
+      <th>type</th>
+      <th>impact</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>Meditação guiada</td>
+      <td>20</td>
+      <td>5</td>
+      <td>pessoal</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>Revisão de metas semanais</td>
+      <td>30</td>
+      <td>5</td>
+      <td>profissional</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>16</td>
+      <td>Planejamento financeiro</td>
+      <td>35</td>
+      <td>4</td>
+      <td>pessoal</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>12</td>
+      <td>Brincar com filhos</td>
+      <td>45</td>
+      <td>4</td>
+      <td>pessoal</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>Cozinhar almoço saudável</td>
+      <td>50</td>
+      <td>4</td>
+      <td>pessoal</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>Treino funcional</td>
+      <td>60</td>
+      <td>4</td>
+      <td>pessoal</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>19</td>
+      <td>Chamada com a liderança</td>
+      <td>40</td>
+      <td>4</td>
+      <td>profissional</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>Leitura técnica</td>
+      <td>45</td>
+      <td>4</td>
+      <td>profissional</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>21</td>
+      <td>Organizar espaço de trabalho</td>
+      <td>25</td>
+      <td>3</td>
+      <td>pessoal</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>Escrever diário</td>
+      <td>25</td>
+      <td>3</td>
+      <td>pessoal</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>Mentoria rápida</td>
+      <td>35</td>
+      <td>3</td>
+      <td>profissional</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>11</td>
+      <td>Responder e-mails críticos</td>
+      <td>40</td>
+      <td>3</td>
+      <td>profissional</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td>Alongamento ativo</td>
+      <td>15</td>
+      <td>2</td>
+      <td>pessoal</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+            </div>
+            <div class="card">
+                <h2>Cronograma sugerido</h2>
+                <table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>task_id</th>
+      <th>name</th>
+      <th>start</th>
+      <th>end</th>
+      <th>duration</th>
+      <th>type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>Meditação guiada</td>
+      <td>00:00</td>
+      <td>00:20</td>
+      <td>20</td>
+      <td>pessoal</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>Revisão de metas semanais</td>
+      <td>00:20</td>
+      <td>00:50</td>
+      <td>30</td>
+      <td>profissional</td>
+    </tr>
+    <tr>
+      <td>16</td>
+      <td>Planejamento financeiro</td>
+      <td>00:50</td>
+      <td>01:25</td>
+      <td>35</td>
+      <td>pessoal</td>
+    </tr>
+    <tr>
+      <td>12</td>
+      <td>Brincar com filhos</td>
+      <td>01:25</td>
+      <td>02:10</td>
+      <td>45</td>
+      <td>pessoal</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>Cozinhar almoço saudável</td>
+      <td>02:10</td>
+      <td>03:00</td>
+      <td>50</td>
+      <td>pessoal</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>Treino funcional</td>
+      <td>03:00</td>
+      <td>04:00</td>
+      <td>60</td>
+      <td>pessoal</td>
+    </tr>
+    <tr>
+      <td>19</td>
+      <td>Chamada com a liderança</td>
+      <td>04:00</td>
+      <td>04:40</td>
+      <td>40</td>
+      <td>profissional</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>Leitura técnica</td>
+      <td>04:40</td>
+      <td>05:25</td>
+      <td>45</td>
+      <td>profissional</td>
+    </tr>
+    <tr>
+      <td>21</td>
+      <td>Organizar espaço de trabalho</td>
+      <td>05:25</td>
+      <td>05:50</td>
+      <td>25</td>
+      <td>pessoal</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>Escrever diário</td>
+      <td>05:50</td>
+      <td>06:15</td>
+      <td>25</td>
+      <td>pessoal</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>Mentoria rápida</td>
+      <td>06:15</td>
+      <td>06:50</td>
+      <td>35</td>
+      <td>profissional</td>
+    </tr>
+    <tr>
+      <td>11</td>
+      <td>Responder e-mails críticos</td>
+      <td>06:50</td>
+      <td>07:30</td>
+      <td>40</td>
+      <td>profissional</td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td>Alongamento ativo</td>
+      <td>07:30</td>
+      <td>07:45</td>
+      <td>15</td>
+      <td>pessoal</td>
+    </tr>
+  </tbody>
+</table>
+            </div>
+            <div class="card">
+                <h2>DataFrame completo (ordenado)</h2>
+                <table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>task_id</th>
+      <th>name</th>
+      <th>duration</th>
+      <th>priority</th>
+      <th>type</th>
+      <th>impact</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>Meditação guiada</td>
+      <td>20</td>
+      <td>5</td>
+      <td>pessoal</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>Revisão de metas semanais</td>
+      <td>30</td>
+      <td>5</td>
+      <td>profissional</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>20</td>
+      <td>Sessão de foco criativo</td>
+      <td>80</td>
+      <td>5</td>
+      <td>profissional</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td>Código foco profundo</td>
+      <td>120</td>
+      <td>5</td>
+      <td>profissional</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>Reunião estratégica</td>
+      <td>90</td>
+      <td>5</td>
+      <td>profissional</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>16</td>
+      <td>Planejamento financeiro</td>
+      <td>35</td>
+      <td>4</td>
+      <td>pessoal</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>12</td>
+      <td>Brincar com filhos</td>
+      <td>45</td>
+      <td>4</td>
+      <td>pessoal</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>Cozinhar almoço saudável</td>
+      <td>50</td>
+      <td>4</td>
+      <td>pessoal</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>Treino funcional</td>
+      <td>60</td>
+      <td>4</td>
+      <td>pessoal</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>19</td>
+      <td>Chamada com a liderança</td>
+      <td>40</td>
+      <td>4</td>
+      <td>profissional</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>Leitura técnica</td>
+      <td>45</td>
+      <td>4</td>
+      <td>profissional</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>14</td>
+      <td>Curso online curto</td>
+      <td>70</td>
+      <td>4</td>
+      <td>profissional</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>Escrever diário</td>
+      <td>25</td>
+      <td>3</td>
+      <td>pessoal</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>21</td>
+      <td>Organizar espaço de trabalho</td>
+      <td>25</td>
+      <td>3</td>
+      <td>pessoal</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>Mentoria rápida</td>
+      <td>35</td>
+      <td>3</td>
+      <td>profissional</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>11</td>
+      <td>Responder e-mails críticos</td>
+      <td>40</td>
+      <td>3</td>
+      <td>profissional</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>17</td>
+      <td>Design review</td>
+      <td>55</td>
+      <td>3</td>
+      <td>profissional</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>15</td>
+      <td>Passeio ao ar livre</td>
+      <td>60</td>
+      <td>3</td>
+      <td>pessoal</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>22</td>
+      <td>Almoço com amigo</td>
+      <td>60</td>
+      <td>2</td>
+      <td>pessoal</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td>Alongamento ativo</td>
+      <td>15</td>
+      <td>2</td>
+      <td>pessoal</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>13</td>
+      <td>Networking virtual</td>
+      <td>30</td>
+      <td>2</td>
+      <td>profissional</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>18</td>
+      <td>Podcast inspirador</td>
+      <td>30</td>
+      <td>2</td>
+      <td>pessoal</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+            </div>
+        </body>
+    </html>
+    
