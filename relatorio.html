@@ -11,14 +11,32 @@
         table { border-collapse: collapse; width: 100%; margin-top: 12px; }
         th, td { border: 1px solid #e2e8f0; padding: 8px 12px; text-align: left; }
         th { background: #eff6ff; color: #1d4ed8; }
+        .stress { display:flex; gap:16px; flex-wrap:wrap; }
+        .stress > div { flex:1 1 260px; border: 1px solid #dbeafe; padding: 12px 16px; border-radius: 10px; background:#eff6ff; }
     </style>
     
         </head>
         <body>
             <h1>Relatório de Equilíbrio Diário</h1>
             <div class="card" style="display:flex; gap:16px; flex-wrap:wrap;">
-                <div><strong>Limite diário</strong><br><span>480 min</span></div><div><strong>Tempo utilizado</strong><br><span>465 min</span></div><div><strong>Impacto total</strong><br><span>31</span></div><div><strong>Pessoal</strong><br><span>59.1%</span></div><div><strong>Profissional</strong><br><span>40.9%</span></div>
+                <div><strong>Limite diário</strong><br><span>480 min</span></div><div><strong>Tempo utilizado</strong><br><span>465 min</span></div><div><strong>Impacto total</strong><br><span>31</span></div><div><strong>Pessoal</strong><br><span>59.1%</span></div><div><strong>Profissional</strong><br><span>40.9%</span></div><div><strong>Status diário</strong><br><span>Alerta moderado</span></div><div><strong>Status semanal</strong><br><span>Alerta moderado</span></div>
             </div>
+            
+    <div class="card stress">
+        <div>
+            <h3>Status diário</h3>
+            <p><strong>Alerta moderado</strong></p>
+            <p>Pontuação: 7.7</p>
+            <p>Inclua pausas ou atividades pessoais de impacto 3.</p>
+        </div>
+        <div>
+            <h3>Status semanal</h3>
+            <p><strong>Alerta moderado</strong></p>
+            <p>Média semanal: 6.4</p>
+            <p>Inclua pausas ou atividades pessoais de impacto 3.</p>
+        </div>
+    </div>
+    
             <div class="card">
                 <h2>Tarefas escolhidas</h2>
                 <table border="1" class="dataframe">
@@ -30,6 +48,7 @@
       <th>priority</th>
       <th>type</th>
       <th>impact</th>
+      <th>stress_profile</th>
     </tr>
   </thead>
   <tbody>
@@ -40,6 +59,7 @@
       <td>5</td>
       <td>pessoal</td>
       <td>3</td>
+      <td>Recuperador</td>
     </tr>
     <tr>
       <td>3</td>
@@ -48,6 +68,7 @@
       <td>5</td>
       <td>profissional</td>
       <td>3</td>
+      <td>Produtivo</td>
     </tr>
     <tr>
       <td>16</td>
@@ -56,6 +77,7 @@
       <td>4</td>
       <td>pessoal</td>
       <td>3</td>
+      <td>Recuperador</td>
     </tr>
     <tr>
       <td>12</td>
@@ -64,6 +86,7 @@
       <td>4</td>
       <td>pessoal</td>
       <td>3</td>
+      <td>Recuperador</td>
     </tr>
     <tr>
       <td>8</td>
@@ -72,6 +95,7 @@
       <td>4</td>
       <td>pessoal</td>
       <td>3</td>
+      <td>Recuperador</td>
     </tr>
     <tr>
       <td>4</td>
@@ -80,6 +104,7 @@
       <td>4</td>
       <td>pessoal</td>
       <td>3</td>
+      <td>Recuperador</td>
     </tr>
     <tr>
       <td>19</td>
@@ -88,6 +113,7 @@
       <td>4</td>
       <td>profissional</td>
       <td>2</td>
+      <td>Estressante</td>
     </tr>
     <tr>
       <td>2</td>
@@ -96,6 +122,7 @@
       <td>4</td>
       <td>profissional</td>
       <td>2</td>
+      <td>Estressante</td>
     </tr>
     <tr>
       <td>21</td>
@@ -104,6 +131,7 @@
       <td>3</td>
       <td>pessoal</td>
       <td>2</td>
+      <td>Equilibrado</td>
     </tr>
     <tr>
       <td>6</td>
@@ -112,6 +140,7 @@
       <td>3</td>
       <td>pessoal</td>
       <td>2</td>
+      <td>Equilibrado</td>
     </tr>
     <tr>
       <td>7</td>
@@ -120,6 +149,7 @@
       <td>3</td>
       <td>profissional</td>
       <td>2</td>
+      <td>Estressante</td>
     </tr>
     <tr>
       <td>11</td>
@@ -128,6 +158,7 @@
       <td>3</td>
       <td>profissional</td>
       <td>2</td>
+      <td>Estressante</td>
     </tr>
     <tr>
       <td>9</td>
@@ -136,6 +167,7 @@
       <td>2</td>
       <td>pessoal</td>
       <td>1</td>
+      <td>Estressante</td>
     </tr>
   </tbody>
 </table>
@@ -272,6 +304,7 @@
       <th>priority</th>
       <th>type</th>
       <th>impact</th>
+      <th>stress_profile</th>
     </tr>
   </thead>
   <tbody>
@@ -282,6 +315,7 @@
       <td>5</td>
       <td>pessoal</td>
       <td>3</td>
+      <td>Recuperador</td>
     </tr>
     <tr>
       <td>3</td>
@@ -290,6 +324,7 @@
       <td>5</td>
       <td>profissional</td>
       <td>3</td>
+      <td>Produtivo</td>
     </tr>
     <tr>
       <td>20</td>
@@ -298,6 +333,7 @@
       <td>5</td>
       <td>profissional</td>
       <td>3</td>
+      <td>Produtivo</td>
     </tr>
     <tr>
       <td>10</td>
@@ -306,6 +342,7 @@
       <td>5</td>
       <td>profissional</td>
       <td>3</td>
+      <td>Produtivo</td>
     </tr>
     <tr>
       <td>5</td>
@@ -314,6 +351,7 @@
       <td>5</td>
       <td>profissional</td>
       <td>2</td>
+      <td>Estressante</td>
     </tr>
     <tr>
       <td>16</td>
@@ -322,6 +360,7 @@
       <td>4</td>
       <td>pessoal</td>
       <td>3</td>
+      <td>Recuperador</td>
     </tr>
     <tr>
       <td>12</td>
@@ -330,6 +369,7 @@
       <td>4</td>
       <td>pessoal</td>
       <td>3</td>
+      <td>Recuperador</td>
     </tr>
     <tr>
       <td>8</td>
@@ -338,6 +378,7 @@
       <td>4</td>
       <td>pessoal</td>
       <td>3</td>
+      <td>Recuperador</td>
     </tr>
     <tr>
       <td>4</td>
@@ -346,6 +387,7 @@
       <td>4</td>
       <td>pessoal</td>
       <td>3</td>
+      <td>Recuperador</td>
     </tr>
     <tr>
       <td>19</td>
@@ -354,6 +396,7 @@
       <td>4</td>
       <td>profissional</td>
       <td>2</td>
+      <td>Estressante</td>
     </tr>
     <tr>
       <td>2</td>
@@ -362,6 +405,7 @@
       <td>4</td>
       <td>profissional</td>
       <td>2</td>
+      <td>Estressante</td>
     </tr>
     <tr>
       <td>14</td>
@@ -370,6 +414,7 @@
       <td>4</td>
       <td>profissional</td>
       <td>2</td>
+      <td>Estressante</td>
     </tr>
     <tr>
       <td>6</td>
@@ -378,6 +423,7 @@
       <td>3</td>
       <td>pessoal</td>
       <td>2</td>
+      <td>Equilibrado</td>
     </tr>
     <tr>
       <td>21</td>
@@ -386,6 +432,7 @@
       <td>3</td>
       <td>pessoal</td>
       <td>2</td>
+      <td>Equilibrado</td>
     </tr>
     <tr>
       <td>7</td>
@@ -394,6 +441,7 @@
       <td>3</td>
       <td>profissional</td>
       <td>2</td>
+      <td>Estressante</td>
     </tr>
     <tr>
       <td>11</td>
@@ -402,6 +450,7 @@
       <td>3</td>
       <td>profissional</td>
       <td>2</td>
+      <td>Estressante</td>
     </tr>
     <tr>
       <td>17</td>
@@ -410,6 +459,7 @@
       <td>3</td>
       <td>profissional</td>
       <td>2</td>
+      <td>Estressante</td>
     </tr>
     <tr>
       <td>15</td>
@@ -418,6 +468,7 @@
       <td>3</td>
       <td>pessoal</td>
       <td>2</td>
+      <td>Equilibrado</td>
     </tr>
     <tr>
       <td>22</td>
@@ -426,6 +477,7 @@
       <td>2</td>
       <td>pessoal</td>
       <td>2</td>
+      <td>Equilibrado</td>
     </tr>
     <tr>
       <td>9</td>
@@ -434,6 +486,7 @@
       <td>2</td>
       <td>pessoal</td>
       <td>1</td>
+      <td>Estressante</td>
     </tr>
     <tr>
       <td>13</td>
@@ -442,6 +495,7 @@
       <td>2</td>
       <td>profissional</td>
       <td>1</td>
+      <td>Estressante</td>
     </tr>
     <tr>
       <td>18</td>
@@ -450,6 +504,7 @@
       <td>2</td>
       <td>pessoal</td>
       <td>1</td>
+      <td>Estressante</td>
     </tr>
   </tbody>
 </table>

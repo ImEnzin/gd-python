@@ -8,6 +8,9 @@ dentro de um limite diário de tempo.
 from __future__ import annotations
 
 import argparse
+import json
+from datetime import datetime
+from pathlib import Path
 from typing import Dict, List, Sequence, Tuple
 
 import pandas as pd
@@ -77,6 +80,12 @@ def parse_cli_args() -> argparse.Namespace:
         default=None,
         help="Caminho opcional para exportar um relatório HTML estilizado.",
     )
+    parser.add_argument(
+        "--stress-log",
+        type=str,
+        default="stress_history.json",
+        help="Arquivo JSON para registrar histórico diário de estresse (use '' para desabilitar).",
+    )
     return parser.parse_args()
 
 
@@ -144,6 +153,8 @@ def exportar_html(
     cronograma_df: pd.DataFrame,
     caminho: str,
     resumo: Dict[str, float],
+    estresse_diario: Dict[str, object],
+    estresse_semanal: Dict[str, object],
 ) -> None:
     """Gera um relatório HTML simples para compartilhamento."""
     estilo = """
@@ -154,12 +165,30 @@ def exportar_html(
         table { border-collapse: collapse; width: 100%; margin-top: 12px; }
         th, td { border: 1px solid #e2e8f0; padding: 8px 12px; text-align: left; }
         th { background: #eff6ff; color: #1d4ed8; }
+        .stress { display:flex; gap:16px; flex-wrap:wrap; }
+        .stress > div { flex:1 1 260px; border: 1px solid #dbeafe; padding: 12px 16px; border-radius: 10px; background:#eff6ff; }
     </style>
     """
     cards = "".join(
         f"<div><strong>{titulo}</strong><br><span>{valor}</span></div>"
         for titulo, valor in resumo.items()
     )
+    stress_cards = f"""
+    <div class="card stress">
+        <div>
+            <h3>Status diário</h3>
+            <p><strong>{estresse_diario['status']}</strong></p>
+            <p>Pontuação: {estresse_diario['score']:.1f}</p>
+            <p>{estresse_diario['mensagem']}</p>
+        </div>
+        <div>
+            <h3>Status semanal</h3>
+            <p><strong>{estresse_semanal['status']}</strong></p>
+            <p>Média semanal: {estresse_semanal['score']:.1f}</p>
+            <p>{estresse_semanal['mensagem']}</p>
+        </div>
+    </div>
+    """
     html = f"""
     <html>
         <head>
@@ -172,6 +201,7 @@ def exportar_html(
             <div class="card" style="display:flex; gap:16px; flex-wrap:wrap;">
                 {cards}
             </div>
+            {stress_cards}
             <div class="card">
                 <h2>Tarefas escolhidas</h2>
                 {tarefas_df.to_html(index=False)}
@@ -189,6 +219,172 @@ def exportar_html(
     """
     with open(caminho, "w", encoding="utf-8") as fp:
         fp.write(html)
+
+
+def classificar_perfil_estresse(task: TaskRecord) -> str:
+    """Rotula uma tarefa em categorias simples de estresse."""
+    impacto = int(task["impact"])
+    tipo = str(task["type"])
+    if impacto == 3 and tipo == "pessoal":
+        return "Recuperador"
+    if impacto == 3:
+        return "Produtivo"
+    if impacto == 2 and tipo == "pessoal":
+        return "Equilibrado"
+    return "Estressante"
+
+
+def anotar_perfil_estresse(df: pd.DataFrame) -> pd.DataFrame:
+    """Adiciona a coluna 'stress_profile' a um DataFrame."""
+    if "stress_profile" in df.columns:
+        return df
+
+    def _class(row) -> str:
+        return classificar_perfil_estresse({"impact": row["impact"], "type": row["type"]})
+
+    return df.assign(stress_profile=df.apply(_class, axis=1))
+
+
+def classificar_estresse(score: float) -> Tuple[str, str]:
+    """Retorna o rótulo de estresse e uma mensagem de orientação."""
+    if score <= 6:
+        return "Equilíbrio saudável", "Continue alternando tarefas recuperadoras e produtivas."
+    if score <= 10:
+        return "Alerta moderado", "Inclua pausas ou atividades pessoais de impacto 3."
+    return "Estresse elevado", "Reduza tarefas estressantes e priorize bem-estar."
+
+
+def normalizar_estresse(total_penalty: float, quantidade: int) -> float:
+    """Mapeia o somatório bruto para a escala 0-15."""
+    if quantidade == 0:
+        return 0.0
+    max_penalty_por_tarefa = 3.5  # impacto 1 em tarefa profissional
+    proporcao = total_penalty / (quantidade * max_penalty_por_tarefa)
+    return max(0.0, min(15.0, proporcao * 15.0))
+
+
+def calcular_estresse_diario(
+    selection: Tuple[int, ...],
+    lookup: Dict[int, TaskRecord],
+    idx: int = 0,
+    memo=None,
+) -> Dict[str, object]:
+    """Computa pontuação de estresse usando os impactos de cada tarefa."""
+    if memo is None:
+        memo = {}
+    key = (idx, selection[idx:])
+    if key in memo:
+        return memo[key]
+
+    if idx >= len(selection):
+        memo[key] = {"stress": 0.0, "trace": tuple(), "count": 0}
+        return memo[key]
+
+    current = lookup[selection[idx]]
+    tail_stats = calcular_estresse_diario(selection, lookup, idx + 1, memo)
+    penalty = max(0, 4 - int(current["impact"]))
+    if current["type"] == "profissional":
+        penalty += 0.5
+
+    result = {
+        "stress": tail_stats["stress"] + penalty,
+        "trace": tail_stats["trace"] + ((current["task_id"], current["impact"]),),
+        "count": tail_stats["count"] + 1,
+    }
+    memo[key] = result
+    return result
+
+
+def carregar_historico_estresse(path: str | None) -> List[Dict[str, object]]:
+    """Lê o arquivo de histórico, se existir."""
+    if not path:
+        return []
+    arquivo = Path(path)
+    if not arquivo.exists():
+        return []
+    try:
+        return json.loads(arquivo.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return []
+
+
+def salvar_historico_estresse(path: str | None, registros: List[Dict[str, object]]) -> None:
+    """Salva o histórico em disco."""
+    if not path:
+        return
+    arquivo = Path(path)
+    arquivo.write_text(json.dumps(registros, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def atualizar_historico_estresse(
+    path: str | None,
+    stress_score: float,
+    impacto_total: int,
+) -> List[Dict[str, object]]:
+    """Atualiza o histórico com o dia atual e retorna a lista truncada a 7 dias."""
+    if not path:
+        return []
+    historico = carregar_historico_estresse(path)
+    registro = {
+        "date": datetime.now().strftime("%Y-%m-%d"),
+        "stress": stress_score,
+        "impact": impacto_total,
+    }
+    if historico and historico[-1]["date"] == registro["date"]:
+        historico[-1] = registro
+    else:
+        historico.append(registro)
+    historico = historico[-7:]
+    salvar_historico_estresse(path, historico)
+    return historico
+
+
+def avaliar_estresse_semanal(
+    historico: Sequence[Dict[str, object]],
+    idx: int = 0,
+    memo=None,
+) -> Dict[str, object]:
+    """Calcula médias semanais de estresse via recursão."""
+    if memo is None:
+        memo = {}
+    key = idx
+    if key in memo:
+        return memo[key]
+
+    if idx >= len(historico):
+        memo[key] = {"soma_stress": 0.0, "soma_impact": 0.0, "dias": 0}
+        return memo[key]
+
+    tail = avaliar_estresse_semanal(historico, idx + 1, memo)
+    atual = historico[idx]
+    resultado = {
+        "soma_stress": tail["soma_stress"] + float(atual["stress"]),
+        "soma_impact": tail["soma_impact"] + float(atual["impact"]),
+        "dias": tail["dias"] + 1,
+    }
+    memo[key] = resultado
+    return resultado
+
+
+def montar_painel_estresse(
+    diario: Dict[str, object],
+    semanal: Dict[str, object],
+) -> Panel:
+    """Cria painel Rich com os status diário e semanal."""
+    escala = "Escala 0-15 · Quanto maior, maior o estresse acumulado"
+    table = Table.grid(expand=True)
+    table.add_column(justify="left")
+    table.add_column(justify="left")
+    table.add_row(
+        "[bold]Status diário[/bold]",
+        f"{diario['status']} · Pontuação {diario['score']:.1f}\n{diario['mensagem']}",
+    )
+    table.add_row(
+        "[bold]Status semanal[/bold]",
+        f"{semanal['status']} · Pontuação {semanal['score']:.1f}\n{semanal['mensagem']}",
+    )
+    table.add_row("", f"[dim]{escala}[/dim]")
+    return Panel(table, title="Monitor de Estresse", border_style="magenta")
 
 
 def merge_sort_dataframe(df: pd.DataFrame, sort_plan: SortPlan, memo=None) -> pd.DataFrame:
@@ -418,6 +614,7 @@ def produzir_relatorio(
     selecionados: Tuple[int, ...],
     capacidade: int,
     html_path: str | None = None,
+    stress_log_path: str | None = None,
 ) -> None:
     """Gera o relatório final no terminal e opcionalmente exporta HTML."""
     lookup = {row.task_id: dict(row._asdict()) for row in df.itertuples(index=False)}
@@ -425,24 +622,42 @@ def produzir_relatorio(
     impacto_total = impacto_info["impact"]
     balanco = calcular_balanco(selecionados, lookup)
 
-    tarefas_escolhidas = [lookup[task_id] for task_id in selecionados]
+    tarefas_escolhidas = [dict(lookup[task_id]) for task_id in selecionados]
     base_cols = df.columns.tolist()
     tarefas_df = pd.DataFrame(tarefas_escolhidas, columns=base_cols)
+    tarefas_df = anotar_perfil_estresse(tarefas_df)
+    df_relatorio = anotar_perfil_estresse(df.copy())
 
     pessoal_pct = (balanco["pessoal"] / balanco["total"] * 100) if balanco["total"] else 0
     profissional_pct = (balanco["profissional"] / balanco["total"] * 100) if balanco["total"] else 0
+
+    estresse_info = calcular_estresse_diario(selecionados, lookup)
+    stress_score = normalizar_estresse(estresse_info["stress"], estresse_info["count"])
+    status_diario, msg_diario = classificar_estresse(stress_score)
+    estresse_diario = {"status": status_diario, "mensagem": msg_diario, "score": stress_score}
+
+    historico = atualizar_historico_estresse(stress_log_path, stress_score, impacto_total)
+    semanal_raw = avaliar_estresse_semanal(historico)
+    stress_baseline = 5.0
+    if semanal_raw["dias"]:
+        media_semanal = (semanal_raw["soma_stress"] + stress_baseline) / (semanal_raw["dias"] + 1)
+    else:
+        media_semanal = (estresse_info["stress"] + stress_baseline) / 2
+    status_semanal, msg_semanal = classificar_estresse(media_semanal)
+    estresse_semanal = {"status": status_semanal, "mensagem": msg_semanal, "score": media_semanal}
 
     console.rule("[bold blue]Relatório de Equilíbrio Diário[/bold blue]")
     console.print(
         montar_painel_resumo(capacidade, balanco["total"], impacto_total, pessoal_pct, profissional_pct)
     )
+    console.print(montar_painel_estresse(estresse_diario, estresse_semanal))
     console.print()
 
     console.print("[bold]Tarefas escolhidas (ordenadas por prioridade e impacto)[/bold]")
     if tarefas_df.empty:
         console.print("[yellow]Nenhuma tarefa alcançou o limite de impacto dentro da restrição de tempo.[/yellow]")
         execucao_ordenada: List[TaskRecord] = []
-        tarefas_ordenadas_df = pd.DataFrame(columns=df.columns)
+        tarefas_ordenadas_df = pd.DataFrame(columns=base_cols + ["stress_profile"])
     else:
         tarefas_ordenadas_df = tarefas_df.sort_values(by=["priority", "impact", "duration"], ascending=[False, False, True])
         imprimir_tabela(
@@ -455,6 +670,7 @@ def produzir_relatorio(
                 ("priority", "Prioridade", "center"),
                 ("type", "Tipo", "center"),
                 ("impact", "Impacto", "center"),
+                ("stress_profile", "Perfil stress", "center"),
             ],
         )
         execucao_ordenada = tarefas_ordenadas_df.to_dict("records")
@@ -480,7 +696,7 @@ def produzir_relatorio(
 
     console.print("\n[bold]DataFrame completo ordenado pelo Merge Sort[/bold]")
     imprimir_tabela(
-        df,
+        df_relatorio,
         "Tarefas (Merge Sort)",
         [
             ("task_id", "ID", "center"),
@@ -489,6 +705,7 @@ def produzir_relatorio(
             ("priority", "Prioridade", "center"),
             ("type", "Tipo", "center"),
             ("impact", "Impacto", "center"),
+            ("stress_profile", "Perfil stress", "center"),
         ],
     )
 
@@ -499,12 +716,27 @@ def produzir_relatorio(
             "Impacto total": f"{impacto_total}",
             "Pessoal": f"{pessoal_pct:.1f}%",
             "Profissional": f"{profissional_pct:.1f}%",
+            "Status diário": estresse_diario["status"],
+            "Status semanal": estresse_semanal["status"],
         }
-        exportar_html(df, tarefas_ordenadas_df, cronograma_df, html_path, resumo)
+        exportar_html(
+            df_relatorio,
+            tarefas_ordenadas_df,
+            cronograma_df,
+            html_path,
+            resumo,
+            estresse_diario,
+            estresse_semanal,
+        )
         console.print(f"\n[green]Relatório HTML salvo em:[/green] {html_path}")
 
 
-def executar_planejamento(limite_diario: int, modo_ordenacao: str, html_path: str | None = None):
+def executar_planejamento(
+    limite_diario: int,
+    modo_ordenacao: str,
+    html_path: str | None = None,
+    stress_log_path: str | None = None,
+):
     """Função principal de orquestração."""
     tarefas = gerar_tarefas_base()
     df = pd.DataFrame(tarefas)
@@ -514,10 +746,11 @@ def executar_planejamento(limite_diario: int, modo_ordenacao: str, html_path: st
     tarefas_ordenadas = df_ordenado.to_dict("records")
     impacto_max, selecionados = knapsack_recursive(tarefas_ordenadas, limite_diario)
 
-    produzir_relatorio(df_ordenado, selecionados, limite_diario, html_path)
+    produzir_relatorio(df_ordenado, selecionados, limite_diario, html_path, stress_log_path)
     return impacto_max, selecionados
 
 
 if __name__ == "__main__":
     args = parse_cli_args()
-    executar_planejamento(args.limit, args.sort, args.html_report)
+    stress_log = args.stress_log or None
+    executar_planejamento(args.limit, args.sort, args.html_report, stress_log)
