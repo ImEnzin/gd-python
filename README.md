@@ -98,4 +98,4 @@ DataFrame completo ordenado pelo Merge Sort
 - `planner.py` – Implementação completa com tarefas, ordenação recursiva, mochila DP e relatório.
 - `README.md` – Este arquivo com documentação acadêmica/pedagógica.
 
-Sinta-se à vontade para ajustar as tarefas ou o limite diário para realizar novos experimentos.
+
